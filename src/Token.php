@@ -7,9 +7,9 @@ use Firebase\JWT\Key;
 
 class Token
 {
-    public static function getJwt(array $assemblerTokenResponse, string $privateKeyPath, string $clientName): string
+    public static function getJwt(array $assemblerTokenResponse, string $clientName): string
     {
-        $pathKeys = $privateKeyPath . $clientName;
+        $pathKeys = AuthEnum::CERTIFICATE->value . '/' . $clientName;
         $privateKey = $pathKeys . AuthEnum::PRIVATE_KEY->value;
 
         $key = openssl_pkey_get_private(
@@ -22,7 +22,7 @@ class Token
 
     public static function decrypt(string $token, string $project): \stdClass
     {
-        $publicKey = file_get_contents(AuthEnum::CERTIFICATE->value . AuthEnum::PUBLIC_KEY->value);
+        $publicKey = file_get_contents(AuthEnum::CERTIFICATE->value . '/' . $project . AuthEnum::PUBLIC_KEY->value);
 
         return JWT::decode($token, new Key($publicKey, AuthEnum::ALG->value));
     }
